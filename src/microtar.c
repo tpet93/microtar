@@ -175,8 +175,8 @@ static int file_close(mtar_t *tar) {
   return MTAR_ESUCCESS;
 }
 
-static int mem_write(mtar_t *tar, const void *data, unsigned size) {
-  mtar_mem_stream_t *mem = tar->stream;
+static int mem_write(mtar_t *tar, const void *data, size_t size) {
+  mtar_mem_stream_t *mem = (mtar_mem_stream_t*)tar->stream;
 
   if(!mem || mem->pos + size >= mem->size) {
     return MTAR_EWRITEFAIL;
@@ -188,8 +188,8 @@ static int mem_write(mtar_t *tar, const void *data, unsigned size) {
   return MTAR_ESUCCESS;
 }
 
-static int mem_read(mtar_t *tar, void *data, unsigned size) {
-  mtar_mem_stream_t *mem = tar->stream;
+static int mem_read(mtar_t *tar, void *data, size_t size) {
+  mtar_mem_stream_t *mem = (mtar_mem_stream_t*) tar->stream;
 
   if(!mem || mem->pos + size >= mem->size) {
     return MTAR_EREADFAIL;
@@ -201,8 +201,8 @@ static int mem_read(mtar_t *tar, void *data, unsigned size) {
   return MTAR_ESUCCESS;
 }
 
-static int mem_seek(mtar_t *tar, unsigned offset) {
-  mtar_mem_stream_t *mem = tar->stream;
+static int mem_seek(mtar_t *tar, long offset) {
+  mtar_mem_stream_t *mem = (mtar_mem_stream_t*) tar->stream;
 
   if(!mem || offset >= mem->size)
     return MTAR_ESEEKFAIL;
@@ -241,10 +241,11 @@ int mtar_open_mem(mtar_t *tar, mtar_mem_stream_t *mem) {
   tar->seek = mem_seek;
   tar->close = mem_close;
 
-  tar->stream = mem;
+  tar->stream = (FILE*) mem;
 
   return MTAR_ESUCCESS;
 }
+
 
 
 int mtar_open(mtar_t *tar, const char *filename, const char *mode) {
